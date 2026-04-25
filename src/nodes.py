@@ -23,13 +23,13 @@ llm = ChatGoogleGenerativeAI(
     google_api_key=api_key or "MOCK_KEY_FOR_TESTING"
 )
 
-def _invoke_llm_safely(messages: list) -> str:
+async def _ainvoke_llm_safely(messages: list) -> str:
     """Helper to invoke LLM and fallback gracefully if API key is missing or invalid."""
     if not os.environ.get("GOOGLE_API_KEY"):
         return "(MOCK LLM OUTPUT - Missing GOOGLE_API_KEY)\n\n**Generated KB Article**\n* Symptoms: User reported issue.\n* Resolution: Steps were taken to resolve it."
     
     try:
-        response = llm.invoke(messages)
+        response = await llm.ainvoke(messages)
         return response.content
     except Exception as e:
         logger.error(f"LLM API Error: {e}")
@@ -65,7 +65,7 @@ async def draft_new_article_node(state: SupportAgentState):
         HumanMessage(content=f"Incident: {report.issue_description}\nResolution: {report.resolution_summary}")
     ]
     
-    drafted_content = _invoke_llm_safely(messages)
+    drafted_content = await _ainvoke_llm_safely(messages)
     
     log = [f"Drafted NEW article derived from {report.incident_id} using Gemini LLM."]
     return {"action_log": log, "llm_output": drafted_content}
@@ -81,7 +81,7 @@ async def update_existing_article_node(state: SupportAgentState):
         HumanMessage(content=f"Existing Article: {article['title']}\nNew Incident: {report.issue_description}\nNew Resolution: {report.resolution_summary}")
     ]
     
-    updated_content = _invoke_llm_safely(messages)
+    updated_content = await _ainvoke_llm_safely(messages)
     
     log = [f"Updated EXISTING article {article['article_id']} based on {report.incident_id} using Gemini LLM."]
     return {"action_log": log, "llm_output": updated_content}
