@@ -17,3 +17,6 @@ class SupportAgentState(TypedDict):
     # State Reducers: Annotated[list, operator.add] tells LangGraph 
     # to APPPEND to this list gracefully instead of resetting it per node!
     action_log: Annotated[list[str], operator.add]
+    
+    # Store the actual generated text from our LLM Agent
+    llm_output: Optional[str]

@@ -31,11 +31,13 @@ async def run_pipeline():
     res_1 = await support_agent.ainvoke({
         "incident_report": incident_1, 
         "retrieved_article": None,
-        "action_log": []
+        "action_log": [],
+        "llm_output": None
     }, config=config_1)
     
     # Our graph now safely aggregates data directly into a final status block!
     logger.info(f"==> FINAL AGGREGATED PATH LOGS: {res_1['action_log']}")
+    logger.info(f"==> AI GENERATED CONTENT:\n{res_1.get('llm_output')}\n")
     
     print("\n" + "="*80 + "\n")
 
@@ -52,10 +54,12 @@ async def run_pipeline():
     res_2 = await support_agent.ainvoke({
         "incident_report": incident_2, 
         "retrieved_article": None,
-        "action_log": []
+        "action_log": [],
+        "llm_output": None
     }, config=config_2)
 
     logger.info(f"==> FINAL AGGREGATED PATH LOGS: {res_2['action_log']}")
+    logger.info(f"==> AI GENERATED CONTENT:\n{res_2.get('llm_output')}\n")
     logger.info("Batch processing complete.")
 
 if __name__ == "__main__":
